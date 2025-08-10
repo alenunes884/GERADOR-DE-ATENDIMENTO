@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Atendimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilo para a barra de rolagem */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-cyan-400">Gerador de Atendimento</h1>
+            <p class="text-gray-400 mt-2">Preencha os campos abaixo para criar a mensagem de atendimento.</p>
+        </div>
+
+        <!-- Formulário -->
+        <form id="attendanceForm" class="space-y-6">
+            
+            <!-- Linha 1: Setor e ID do Atendente -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="department" class="block mb-2 text-sm font-medium text-gray-300">Setor</label>
+                    <select id="department" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5">
+                        <option value="Comercial">Comercial</option>
+                        <option value="Suporte">Suporte</option>
+                        <option value="Financeiro">Financeiro</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="attendantId" class="block mb-2 text-sm font-medium text-gray-300">ID do Atendimento</label>
+                    <input type="text" id="attendantId" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5" placeholder="Ex: 12345">
+                </div>
+            </div>
+
+            <!-- Linha 2: Nome do Atendente -->
+            <div>
+                <label for="attendantName" class="block mb-2 text-sm font-medium text-gray-300">Nome do Atendente</label>
+                <select id="attendantName" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5">
+                    <option value="RICARDO">RICARDO</option>
+                    <option value="MATHEUS">MATHEUS</option>
+                    <option value="LEONARDO">LEONARDO</option>
+                    <option value="ROBSON">ROBSON</option>
+                </select>
+            </div>
+
+            <!-- Linha 3: Nome e Telefone do Cliente -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="clientName" class="block mb-2 text-sm font-medium text-gray-300">Nome do Cliente</label>
+                    <input type="text" id="clientName" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5" placeholder="Nome completo">
+                </div>
+                <div>
+                    <label for="clientPhone" class="block mb-2 text-sm font-medium text-gray-300">Telefone do Cliente</label>
+                    <input type="tel" id="clientPhone" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5" placeholder="(99) 99999-9999">
+                </div>
+            </div>
+
+            <!-- Linha 4: Motivo do Contato -->
+            <div>
+                <label for="reason" class="block mb-2 text-sm font-medium text-gray-300">Motivo do Contato</label>
+                <textarea id="reason" rows="4" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2.5" placeholder="Descreva o motivo do contato..."></textarea>
+            </div>
+
+            <!-- Botão de Gerar -->
+            <button type="submit" class="w-full text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-3 text-center transition-all duration-300">
+                Gerar Atendimento
+            </button>
+        </form>
+
+        <!-- Área de Resultado -->
+        <div id="resultContainer" class="mt-8 hidden">
+            <h2 class="text-xl font-semibold text-cyan-400 mb-4">Mensagem Gerada:</h2>
+            <div class="relative">
+                <pre id="resultText" class="bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-300 whitespace-pre-wrap text-sm overflow-x-auto"></pre>
+                <button id="copyButton" class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium py-1 px-3 rounded-lg text-xs transition-all duration-300">
+                    Copiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Notificação -->
+        <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300">
+            Texto copiado!
+        </div>
+    </div>
+
+    <script>
+        // Seleciona os elementos do DOM
+        const form = document.getElementById('attendanceForm');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultText = document.getElementById('resultText');
+        const copyButton = document.getElementById('copyButton');
+        const notification = document.getElementById('notification');
+
+        // Adiciona o evento de 'submit' ao formulário
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Previne o recarregamento da página
+
+            // Coleta os valores dos campos do formulário
+            const department = document.getElementById('department').value; // Embora não usado no output, mantemos para futuras implementações
+            const attendantId = document.getElementById('attendantId').value;
+            const attendantName = document.getElementById('attendantName').value;
+            const clientName = document.getElementById('clientName').value;
+            const clientPhone = document.getElementById('clientPhone').value;
+            const reason = document.getElementById('reason').value;
+
+            // Validação simples para garantir que campos essenciais não estão vazios
+            if (!attendantId || !clientName || !clientPhone || !reason) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            // Formata a mensagem de saída conforme solicitado
+            const output = `
+ID ATENDIMENTO: ${attendantId}
+NOME: ${clientName}
+TELEFONE: ${clientPhone}
+MOTIVO DO CONTATO: ${reason}
+ATENDENTE: ${attendantName}
+            `.trim();
+
+            // Exibe o resultado
+            resultText.textContent = output;
+            resultContainer.classList.remove('hidden');
+        });
+
+        // Adiciona o evento de 'click' ao botão de copiar
+        copyButton.addEventListener('click', () => {
+            // Cria um textarea temporário para copiar o texto
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = resultText.textContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                // Usa a API de Clipboard para maior compatibilidade
+                document.execCommand('copy');
+                showNotification('Texto copiado com sucesso!');
+            } catch (err) {
+                showNotification('Erro ao copiar o texto.', true);
+                console.error('Falha ao copiar: ', err);
+            }
+
+            document.body.removeChild(tempTextArea);
+        });
+
+        // Função para mostrar notificação
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.classList.remove('bg-green-500', 'bg-red-500');
+            notification.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+            
+            // Anima a notificação
+            notification.classList.remove('translate-x-full');
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+            }, 3000); // A notificação some após 3 segundos
+        }
+    </script>
+</body>
+</html>
