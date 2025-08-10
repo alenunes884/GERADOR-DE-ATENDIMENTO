@@ -121,7 +121,7 @@
             event.preventDefault(); // Previne o recarregamento da página
 
             // Coleta os valores dos campos do formulário
-            const department = document.getElementById('department').value; // Embora não usado no output, mantemos para futuras implementações
+            const department = document.getElementById('department').value;
             const attendantId = document.getElementById('attendantId').value;
             const attendantName = document.getElementById('attendantName').value;
             const clientName = document.getElementById('clientName').value;
@@ -136,6 +136,7 @@
 
             // Formata a mensagem de saída conforme solicitado
             const output = `
+SETOR: ${department}
 ID ATENDIMENTO: ${attendantId}
 NOME: ${clientName}
 TELEFONE: ${clientPhone}
